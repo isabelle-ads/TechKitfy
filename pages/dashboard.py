@@ -2,16 +2,42 @@ import streamlit as st
 
 st.title("📊 Dashboard")
 
-col1, col2, col3 = st.columns(3)
-
-col1.metric("Produtos", "120")
-col2.metric("Clientes", "85")
-col3.metric("Pedidos", "43")
+st.write("Bem-vindo ao painel administrativo da TechKitfy.")
 
 st.write("---")
 
-st.subheader("Resumo do Sistema")
+col1, col2, col3 = st.columns(3)
 
-st.write("""
-Sistema desenvolvido para a disciplina APS.
-""")
+with col1:
+    st.info("📦 Produtos")
+    st.metric(label="Total", value="120")
+
+with col2:
+    st.success("👥 Clientes")
+    st.metric(label="Total", value="85")
+
+with col3:
+    st.warning("🛒 Pedidos")
+    st.metric(label="Total", value="43")
+
+st.write("---")
+
+st.subheader("📈 Atividades Recentes")
+
+st.dataframe([
+    {
+        "Usuário": "Carlos",
+        "Ação": "Comprou Notebook",
+        "Status": "Concluído"
+    },
+    {
+        "Usuário": "Ana",
+        "Ação": "Cadastro realizado",
+        "Status": "Novo"
+    },
+    {
+        "Usuário": "Lucas",
+        "Ação": "Pedido cancelado",
+        "Status": "Pendente"
+    }
+])
