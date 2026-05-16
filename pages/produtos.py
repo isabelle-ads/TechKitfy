@@ -2,4 +2,19 @@ import streamlit as st
 
 st.title("🛒 Produtos")
 
-requests.get("http://localhost:8000/produtos")
+produtos = [
+    {
+        "Produto": "Notebook Gamer",
+        "Preço": "R$ 5.999"
+    },
+    {
+        "Produto": "Mouse RGB",
+        "Preço": "R$ 199"
+    },
+    {
+        "Produto": "Monitor 144Hz",
+        "Preço": "R$ 1.299"
+    }
+]
+
+st.table(produtos)
