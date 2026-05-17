@@ -1,21 +1,41 @@
 import streamlit as st
 
-st.title("📦 Cadastro de Equipamentos / Produtos")
+st.markdown('<div class="main-neon-title">📦 registro patrimonial (ti)</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-sub-title">Terminal de cadastramento de ativos eletrônicos de uso interno.</div>', unsafe_allow_html=True)
 
-# 🔒 TRAVA DE SEGURANÇA (RNF01): Impede acessos não autorizados
 if "nivel_acesso" not in st.session_state or st.session_state.nivel_acesso != "admin":
-    st.error("❌ Acesso restrito! Apenas administradores do sistema podem cadastrar novos equipamentos.")
+    st.error("🔒 Privilégio insuficiente. Esta operação exige credenciais de Administrador Core.")
 else:
-    st.write("Insira as informações do eletroeletrónico para o inventário de TI:")
+    st.markdown("""
+        <style>
+        .form-structural-container {
+            background-color: #16162d;
+            border: 1px solid rgba(0, 247, 255, 0.1);
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
-    with st.form("form_cadastro_ti"):
-        nome = st.text_input("Nome do Equipamento")
-        patrimonio = st.text_input("Número de Patrimônio")
-        marca = st.text_input("Marca")
-        modelo = st.text_input("Modelo")
-        setor = st.selectbox("Setor Responsável", ["Estoque Central", "TI Interno", "Suporte Tecnológico", "Financeiro"])
-        estado = st.selectbox("Estado do Equipamento", ["Disponível", "Em manutenção", "Em uso", "Descartado"])
+    st.markdown('<div class="form-structural-container">', unsafe_allow_html=True)
+    with st.form("form_ativos"):
+        c1, c2 = st.columns(2)
+        with c1:
+            eq_nome = st.text_input("NOME COMPLETO DO ATIVO", placeholder="Ex: Servidor PowerEdge R750")
+            eq_patrimonio = st.text_input("CÓDIGO DE PATRIMÔNIO (TAG)", placeholder="Ex: BR-TI-8942")
+            eq_marca = st.text_input("FABRICANTE / MARCA")
+        with c2:
+            eq_modelo = st.text_input("MODELO / ESPECIFICAÇÃO")
+            eq_setor = st.selectbox("ALOCAÇÃO FÍSICA DO BEM", ["Data Center Local", "Suporte Nível 1", "Financeiro", "Core Team"])
+            eq_estado = st.selectbox("STATUS OPERACIONAL", ["Disponível", "Ativo/Em uso", "Manutenção Laboratório"])
+            
+        st.write("<br>", unsafe_allow_html=True)
+        confirmar = st.form_submit_button("CONCLUIR CRUZA DE DADOS (GRAVAR)")
         
-        if st.form_submit_button("Salvar Registro"):
-            # Aqui no futuro entrará a conexão com a API da Vic
-            st.success(f"Sucesso! {nome} (Patrimônio: {patrimonio}) foi registrado no sistema.")
+        if confirmar:
+            if eq_nome and eq_patrimonio:
+                st.success(f"💾 Sucesso! Ativo {eq_nome} catalogado sob o registro {eq_patrimonio}.")
+            else:
+                st.warning("⚠️ Atenção: Os campos de Identificação e Patrimônio não podem ficar nulos.")
+    st.markdown('</div>', unsafe_allow_html=True)
