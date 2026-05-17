@@ -195,15 +195,15 @@ Este projeto foi desenvolvido com fins acadêmicos para prática de:
 
 ---
 
-# 👨‍💻 Equipe
+# 👨‍💻 Equipe 
 
 <div align="center">
 
 | Nome | Função |
 |---|---|
 | Isabelle Fernandes | Frontend / UI & UX |
-| Integrante 2 | Backend |
-| Integrante 3 | Banco de Dados |
+| Maria Vitória | Backend |
+| Lucas Gabriel | Banco de Dados |
 
 </div>
 
