@@ -78,33 +78,59 @@ st.write("---")
 
 # LISTAGEM
 
-st.subheader("📋 Lista de Produtos")
+st.write("---")
 
-for i, produto in enumerate(
-    st.session_state.produtos
-):
+st.subheader("🛍️ Produtos Disponíveis")
 
-    col1, col2, col3, col4 = st.columns(
-        [3, 2, 2, 1]
-    )
+pesquisa = st.text_input(
+    "🔍 Pesquisar produto"
+)
 
-    col1.write(produto["nome"])
+filtro_categoria = st.selectbox(
+    "📂 Filtrar Categoria",
+    [
+        "Todas",
+        "Notebook",
+        "Periférico",
+        "Monitor",
+        "Smartphone"
+    ]
+)
 
-    col2.write(
-        f"R$ {produto['preco']}"
-    )
+colunas = st.columns(3)
 
-    col3.write(
-        produto["categoria"]
-    )
+for i, produto in enumerate(st.session_state.produtos):
 
-    # EXCLUIR
+    if pesquisa.lower() not in produto["nome"].lower():
 
-    if col4.button(
-        "🗑️",
-        key=i
-    ):
+        continue
 
-        st.session_state.produtos.pop(i)
+    if filtro_categoria != "Todas":
 
-        st.rerun()
+        if produto["categoria"] != filtro_categoria:
+
+            continue
+
+    with colunas[i % 3]:
+
+        st.container(border=True)
+
+        st.image(
+            "https://images.unsplash.com/photo-1517336714739-489689fd1ca8",
+            use_container_width=True
+        )
+
+        st.subheader(produto["nome"])
+
+        st.write(f"💰 R$ {produto['preco']}")
+
+        st.write(f"📦 {produto['categoria']}")
+
+        if st.button(
+            "🗑️ Excluir",
+            key=i
+        ):
+
+            st.session_state.produtos.pop(i)
+
+            st.rerun()
