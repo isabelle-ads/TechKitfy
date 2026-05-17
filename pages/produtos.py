@@ -1,54 +1,110 @@
 import streamlit as st
+import pandas as pd
+
+# ESTADO DA SESSÃO
+
+if "produtos" not in st.session_state:
+
+    st.session_state.produtos = [
+
+        {
+            "nome": "Notebook Gamer",
+            "preco": 5999,
+            "categoria": "Notebook"
+        },
+
+        {
+            "nome": "Mouse RGB",
+            "preco": 199,
+            "categoria": "Periférico"
+        }
+
+    ]
+
+# TÍTULO
 
 st.title("🛒 Produtos")
 
-st.write("Confira nossos produtos disponíveis.")
+st.write("Gerencie os produtos da TechKitfy.")
 
 st.write("---")
 
-produtos = [
+# FORMULÁRIO
 
-    {
-        "nome": "Notebook Gamer",
-        "preco": "R$ 5.999",
-        "categoria": "Notebook",
-        "imagem": "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6"
-    },
+st.subheader("📦 Adicionar Produto")
 
-    {
-        "nome": "Mouse RGB",
-        "preco": "R$ 199",
-        "categoria": "Periférico",
-        "imagem": "https://images.unsplash.com/photo-1527814050087-3793815479db"
-    },
+col1, col2 = st.columns(2)
 
-    {
-        "nome": "Monitor 144Hz",
-        "preco": "R$ 1.299",
-        "categoria": "Monitor",
-        "imagem": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf"
+with col1:
+
+    nome = st.text_input("Nome do Produto")
+
+    preco = st.number_input(
+        "Preço",
+        min_value=0.0,
+        format="%.2f"
+    )
+
+with col2:
+
+    categoria = st.selectbox(
+        "Categoria",
+        [
+            "Notebook",
+            "Periférico",
+            "Monitor",
+            "Smartphone"
+        ]
+    )
+
+# BOTÃO
+
+if st.button("Cadastrar Produto"):
+
+    novo_produto = {
+
+        "nome": nome,
+        "preco": preco,
+        "categoria": categoria
     }
 
-]
+    st.session_state.produtos.append(
+        novo_produto
+    )
 
-col1, col2, col3 = st.columns(3)
+    st.success("✅ Produto cadastrado!")
 
-for i, produto in enumerate(produtos):
+st.write("---")
 
-    with [col1, col2, col3][i]:
+# LISTAGEM
 
-        st.image(
-            produto["imagem"],
-            use_container_width=True
-        )
+st.subheader("📋 Lista de Produtos")
 
-        st.subheader(produto["nome"])
+for i, produto in enumerate(
+    st.session_state.produtos
+):
 
-        st.write(f"💰 {produto['preco']}")
+    col1, col2, col3, col4 = st.columns(
+        [3, 2, 2, 1]
+    )
 
-        st.write(f"📦 {produto['categoria']}")
+    col1.write(produto["nome"])
 
-        st.button(
-            "Comprar",
-            key=i
-        )
+    col2.write(
+        f"R$ {produto['preco']}"
+    )
+
+    col3.write(
+        produto["categoria"]
+    )
+
+    # EXCLUIR
+
+    if col4.button(
+        "🗑️",
+        key=i
+    ):
+
+        st.session_state.produtos.pop(i)
+
+        st.rerun()
