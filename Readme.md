@@ -12,8 +12,8 @@ Frontend desenvolvido com Python + Streamlit.
 
 # 👥 Desenvolvido por:
 
-Isabelle Fernandes Juarez
-Maria Vitória Alcânta da Silva
+Isabelle Fernandes Juarez | 
+Maria Vitória Alcânta da Silva | 
 Lucas Gabriel da Silva Silveira 
 
 ---
