@@ -1,74 +1,20 @@
 import streamlit as st
-import pandas as pd
 
-st.title("📦 Cadastro de Produtos")
+st.title("📦 Cadastro de Equipamentos / Produtos")
 
-st.write("Adicione novos produtos ao sistema.")
-
-st.write("---")
-
-# FORMULÁRIO
-
-nome = st.text_input("Nome do Produto")
-
-preco = st.number_input(
-    "Preço",
-    min_value=0.0,
-    format="%.2f"
-)
-
-estoque = st.number_input(
-    "Estoque",
-    min_value=0,
-    step=1
-)
-
-categoria = st.selectbox(
-    "Categoria",
-    [
-        "Notebook",
-        "Periféricos",
-        "Monitor",
-        "Smartphone"
-    ]
-)
-
-descricao = st.text_area(
-    "Descrição"
-)
-
-# BOTÃO
-
-if st.button("Cadastrar Produto"):
-
-    st.success("✅ Produto cadastrado com sucesso!")
-
-# DADOS MOCKADOS
-
-st.write("---")
-
-st.subheader("📋 Produtos Cadastrados")
-
-dados = {
-    "Produto": [
-        "Notebook Gamer",
-        "Mouse RGB"
-    ],
-
-    "Preço": [
-        "R$ 5.999",
-        "R$ 199"
-    ],
-
-    "Categoria": [
-        "Notebook",
-        "Periféricos"
-    ]
-}
-
-df = pd.DataFrame(dados)
-
-st.dataframe(
-    df,
-    use_container_width=True
-)
+# Regra de Segurança: Se não for admin, não vê o formulário (RNF01) 
+if "nivel_acesso" not in st.session_state or st.session_state.nivel_acesso != "admin":
+    st.error("Acesso restrito! Apenas administradores do sistema podem cadastrar produtos.")
+else:
+    st.write("Preencha os dados do equipamento obtidos pela Engenharia de Requisitos[cite: 5, 7]:")
+    
+    with st.form("cadastro_ti"):
+        nome = st.text_input("Nome do Equipamento")
+        patrimonio = st.text_input("Número de Patrimônio")
+        marca = st.text_input("Marca")
+        modelo = st.text_input("Modelo")
+        setor = st.selectbox("Setor Responsável", ["Estoque Central", "TI Interno", "Vendas"])
+        estado = st.selectbox("Estado do Equipamento [cite: 10]", ["Disponível", "Em manutenção", "Em uso", "Descartado"])
+        
+        if st.form_submit_button("Salvar Registro"):
+            st.success(f"Equipamento {nome} (Patrimônio: {patrimonio}) guardado com sucesso!")
