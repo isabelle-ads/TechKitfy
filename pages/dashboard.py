@@ -1,6 +1,10 @@
 import streamlit as st
 import requests
-
+try:
+    setores_distribuicao
+except NameError:
+    setores_distribuicao = []
+    total_ativos = 0
 # URL base do seu Backend FastAPI para produtos
 API_URL = "http://127.0.0.1:8000/api/produtos"
 
