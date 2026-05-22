@@ -14,7 +14,7 @@ Frontend desenvolvido com Python + Streamlit.
 
 Isabelle Fernandes Juarez | 
 Maria Vitória Alcânta da Silva | 
-Lucas Gabriel da Silva Silveira 
+Lucas Gabriel de Souza Silveira 
 
 ---
 
