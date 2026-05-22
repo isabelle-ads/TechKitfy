@@ -1,0 +1,9 @@
+# Pastas e arquivos que NÃO devem subir
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+*.db
+techkitfy.db
+.DS_Store
