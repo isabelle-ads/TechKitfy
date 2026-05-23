@@ -3,6 +3,54 @@ import requests
 import urllib.parse
 from utils import carregar_design_premium
 
+import streamlit as st
+
+# ==================================================
+# SIDEBAR GLOBAL
+# ==================================================
+
+st.sidebar.title("🖥️ TERMINAL")
+
+st.sidebar.page_link(
+    "app.py",
+    label="Home"
+)
+
+st.sidebar.page_link(
+    "pages/produtos.py",
+    label="Produtos"
+)
+
+# ADMIN
+if st.session_state.get("nivel_acesso") == "admin":
+
+    st.sidebar.page_link(
+        "pages/cadastro_produto.py",
+        label="Cadastro Produto"
+    )
+
+    st.sidebar.page_link(
+        "pages/dashboard.py",
+        label="Dashboard"
+    )
+
+    st.sidebar.page_link(
+        "pages/usuarios.py",
+        label="Usuários"
+    )
+
+# LOGOUT
+if st.session_state.get("conectado"):
+
+    st.sidebar.write("---")
+
+    if st.sidebar.button("🚪 Logout"):
+
+        st.session_state.conectado = False
+        st.session_state.nivel_acesso = None
+
+        st.switch_page("app.py")
+
 # EXECUTA A UNIFICAÇÃO DO DESIGN DO MENU LATERAL E TEMA ESCURO
 carregar_design_premium()
 

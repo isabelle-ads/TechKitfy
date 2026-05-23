@@ -1,5 +1,54 @@
 import streamlit as st
 import requests
+
+import streamlit as st
+
+# ==================================================
+# SIDEBAR GLOBAL
+# ==================================================
+
+st.sidebar.title("🖥️ TERMINAL")
+
+st.sidebar.page_link(
+    "app.py",
+    label="Home"
+)
+
+st.sidebar.page_link(
+    "pages/produtos.py",
+    label="Produtos"
+)
+
+# ADMIN
+if st.session_state.get("nivel_acesso") == "admin":
+
+    st.sidebar.page_link(
+        "pages/cadastro_produto.py",
+        label="Cadastro Produto"
+    )
+
+    st.sidebar.page_link(
+        "pages/dashboard.py",
+        label="Dashboard"
+    )
+
+    st.sidebar.page_link(
+        "pages/usuarios.py",
+        label="Usuários"
+    )
+
+# LOGOUT
+if st.session_state.get("conectado"):
+
+    st.sidebar.write("---")
+
+    if st.sidebar.button("🚪 Logout"):
+
+        st.session_state.conectado = False
+        st.session_state.nivel_acesso = None
+
+        st.switch_page("app.py")
+
 # URL base do seu Backend FastAPI para produtos
 API_URL = "http://127.0.0.1:8000/api/produtos"
 
