@@ -97,6 +97,16 @@ def login_usuario(user: UserLogin, db: Session = Depends(get_db)):
 def listar_usuarios(db: Session = Depends(get_db)):
     return db.query(UsuarioModel).all()
 
+# ROTA ADICIONADA: Deleta permanentemente um colaborador do banco SQLite pelo ID
+@app.delete("/api/usuarios/{user_id}", tags=["Usuários"])
+def deletar_usuario(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(UsuarioModel).filter(UsuarioModel.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Colaborador não localizado na infraestrutura")
+    db.delete(user)
+    db.commit()
+    return {"mensagem": "Credenciais revogadas com sucesso!"}
+
 # --- ROTAS DE PRODUTOS (Endpoints) ---
 @app.post("/api/produtos", status_code=status.HTTP_201_CREATED, tags=["Produtos"])
 def criar_produto(prod: ProdutoCreate, db: Session = Depends(get_db)):

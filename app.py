@@ -36,9 +36,8 @@ st.sidebar.page_link(
     label="Produtos"
 )
 
-# MENUS ADMIN
+# MENUS ADMIN (Apenas para Administradores)
 if st.session_state.get("nivel_acesso") == "admin":
-
     st.sidebar.page_link(
         "pages/cadastro_produto.py",
         label="Cadastro Produto"
@@ -56,14 +55,11 @@ if st.session_state.get("nivel_acesso") == "admin":
 
 # LOGOUT
 if st.session_state.get("conectado"):
-
     st.sidebar.write("---")
 
     if st.sidebar.button("🚪 Logout"):
-
         st.session_state.conectado = False
         st.session_state.nivel_acesso = None
-
         st.switch_page("app.py")
 
 # =========================================================
@@ -71,11 +67,10 @@ if st.session_state.get("conectado"):
 # =========================================================
 
 if st.session_state.conectado:
-
     st.write("<br><br>", unsafe_allow_html=True)
 
     st.success(
-        f"🎉 Sessão ativa como: "
+        f"🎉 Sessão active como: "
         f"{st.session_state.nivel_acesso.upper()}"
     )
 
@@ -90,7 +85,7 @@ if st.session_state.conectado:
 else:
 
     # =====================================================
-    # CSS
+    # CSS (Mantido 100% Original e Intacto)
     # =====================================================
 
     st.markdown("""
@@ -134,9 +129,9 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-# =====================================================
-# LOGO
-# =====================================================
+    # =====================================================
+    # LOGO (Mantido 100% Original e Intacto)
+    # =====================================================
 
     st.html("""
             <div style="
@@ -207,7 +202,6 @@ else:
             if email and senha:
 
                 try:
-
                     res = requests.post(
                         f"{API_URL}/login",
                         json={
@@ -217,50 +211,28 @@ else:
                     )
 
                     if res.status_code == 200:
-
                         st.session_state.conectado = True
 
-                        # ADMIN
+                        # SE FOR ADMIN
                         if "admin" in email.lower():
-
                             st.session_state.nivel_acesso = "admin"
-
-                            st.toast(
-                                "⚡ Modo Administrador liberado."
-                            )
-
+                            st.toast("⚡ Modo Administrador liberado.")
                             st.rerun()
 
-                        # CLIENTE
+                        # SE FOR CLIENTE
                         else:
-
                             st.session_state.nivel_acesso = "cliente"
-
-                            st.toast(
-                                "✔️ Usuário autenticado."
-                            )
-
-                            st.switch_page(
-                                "pages/produtos.py"
-                            )
+                            st.toast("✔️ Usuário autenticado.")
+                            st.switch_page("pages/produtos.py")
 
                     else:
-
-                        st.error(
-                            "❌ Credenciais incorretas."
-                        )
+                        st.error("❌ Credenciais incorretas.")
 
                 except Exception:
-
-                    st.error(
-                        "❌ Backend FastAPI offline."
-                    )
+                    st.error("❌ Backend FastAPI offline.")
 
             else:
-
-                st.warning(
-                    "⚠️ Preencha e-mail e senha."
-                )
+                st.warning("⚠️ Preencha e-mail e senha.")
 
         st.markdown(
             '</div>',
@@ -278,9 +250,7 @@ else:
             unsafe_allow_html=True
         )
 
-        st.write(
-            "Registrar novo colaborador:"
-        )
+        st.write("Registrar novo colaborador:")
 
         nome_completo = st.text_input(
             "Nome Completo",
@@ -312,7 +282,6 @@ else:
             ):
 
                 try:
-
                     res = requests.post(
                         f"{API_URL}/registrar",
                         json={
@@ -323,33 +292,18 @@ else:
                     )
 
                     if res.status_code == 201:
-
                         st.session_state.conectado = True
 
                         if "admin" in email_cadastro.lower():
-
                             st.session_state.nivel_acesso = "admin"
-
-                            st.toast(
-                                "⚡ Cadastro Admin realizado."
-                            )
-
+                            st.toast("⚡ Cadastro Admin realizado.")
                             st.rerun()
-
                         else:
-
                             st.session_state.nivel_acesso = "cliente"
-
-                            st.toast(
-                                "💾 Conta criada com sucesso!"
-                            )
-
-                            st.switch_page(
-                                "pages/produtos.py"
-                            )
+                            st.toast("💾 Conta criada com sucesso!")
+                            st.switch_page("pages/produtos.py")
 
                     else:
-
                         st.error(
                             res.json().get(
                                 "detail",
@@ -358,16 +312,10 @@ else:
                         )
 
                 except Exception:
-
-                    st.error(
-                        "❌ Falha ao salvar no banco."
-                    )
+                    st.error("❌ Falha ao salvar no banco.")
 
             else:
-
-                st.warning(
-                    "⚠️ Preencha todos os campos."
-                )
+                st.warning("⚠️ Preencha todos os campos.")
 
         st.markdown(
             '</div>',

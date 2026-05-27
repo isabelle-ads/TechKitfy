@@ -2,14 +2,61 @@ import streamlit as st
 import requests
 from utils import carregar_design_premium
 
-# EXECUTA ELA LOGO NA PRIMEIRA LINHA DE CÓDIGO
+# ==================================================
+# SIDEBAR GLOBAL (Injetada para o menu não sumir)
+# ==================================================
+
+st.sidebar.title("🖥️ TERMINAL")
+
+st.sidebar.page_link(
+    "app.py",
+    label="Home"
+)
+
+st.sidebar.page_link(
+    "pages/produtos.py",
+    label="Produtos"
+)
+
+# ADMIN
+if st.session_state.get("nivel_acesso") == "admin":
+
+    st.sidebar.page_link(
+        "pages/cadastro_produto.py",
+        label="Cadastro Produto"
+    )
+
+    st.sidebar.page_link(
+        "pages/dashboard.py",
+        label="Dashboard"
+    )
+
+    st.sidebar.page_link(
+        "pages/usuarios.py",
+        label="Usuários"
+    )
+
+# LOGOUT
+if st.session_state.get("conectado"):
+
+    st.sidebar.write("---")
+
+    if st.sidebar.button("🚪 Logout"):
+
+        st.session_state.conectado = False
+        st.session_state.nivel_acesso = None
+
+        st.switch_page("app.py")
+
+# EXECUTA ELA LOGO NA PRIMEIRA LINHA DE CÓDIGO DO CONTEÚDO
 carregar_design_premium()
+
 # URL da sua API FastAPI para produtos
 API_URL = "http://127.0.0.1:8000/api/produtos"
 
-# No topo do seu pages/cadastro_produto.py substitua os st.title/st.write antigos por:
 st.markdown('<div class="main-neon-title">📦 registro patrimonial (ti)</div>', unsafe_allow_html=True)
 st.markdown('<div class="main-sub-title">Terminal de cadastramento de ativos eletrônicos de uso interno.</div>', unsafe_allow_html=True)
+
 if "nivel_acesso" not in st.session_state or st.session_state.nivel_acesso != "admin":
     st.error("🔒 Privilégio insuficiente. Esta operação exige credenciais de Administrador Core.")
 else:

@@ -3,8 +3,6 @@ import requests
 import urllib.parse
 from utils import carregar_design_premium
 
-import streamlit as st
-
 # ==================================================
 # SIDEBAR GLOBAL
 # ==================================================
@@ -88,7 +86,7 @@ def carregar_estilo_premium():
             text-align: center;
             box-shadow: 0 0 12px rgba(0, 247, 255, 0.25);
             width: 100%;
-            height: 380px;
+            height: 315px; /* Ajustado para dar espaço aos botões nativos */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -105,21 +103,15 @@ def carregar_estilo_premium():
         .price-stock-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 8px; margin-top: 5px; }
         .prod-price-tag { font-family: "Orbitron", sans-serif; font-size: 1.1rem; font-weight: 800; color: #00f7ff; }
         .prod-stock-tag { font-family: "Orbitron", sans-serif; color: #8c97a8; font-size: 0.85rem; font-weight: 700; }
-        .card-actions-row { display: flex; gap: 8px; margin-top: 12px; width: 100%; }
-        .btn-card-action { flex: 1; text-decoration: none; padding: 6px 0; font-size: 0.78rem; font-weight: 700; border-radius: 6px; text-align: center; display: inline-block; transition: all 0.2s ease; }
-        .btn-edit { border: 1px solid #00f7ff; color: #00f7ff; background: rgba(0, 247, 255, 0.03); }
-        .btn-edit:hover { background: #00f7ff; color: #0b0f19; box-shadow: 0 0 8px rgba(0, 247, 255, 0.4); }
-        .btn-delete { border: 1px solid #ff3b3b; color: #ff3b3b; background: rgba(255, 59, 59, 0.03); }
-        .btn-delete:hover { background: #ff3b3b; color: #ffffff; box-shadow: 0 0 8px rgba(255, 59, 59, 0.4); }
         .form-overlay-box { background-color: #111726; border: 2px solid #00f7ff; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 0 20px rgba(0, 247, 255, 0.2); }
         .cart-overlay-box { background: linear-gradient(135deg, #111b24 0%, #0b0f19 100%); border: 2px solid #00ffaa; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 0 15px rgba(0, 255, 170, 0.2); }
-        div.stButton > button { margin-top: 0px !important; }
+        div.stButton > button { margin-top: 5px !important; }
         </style>
     """, unsafe_allow_html=True)
 
 carregar_estilo_premium()
 
-# Controle de nível de acesso
+# Controle de nível de acesso seguro
 eh_admin = "nivel_acesso" in st.session_state and st.session_state.nivel_acesso == "admin"
 
 st.markdown('<div class="neon-title">TechKitfy Stock</div>', unsafe_allow_html=True)
@@ -167,19 +159,6 @@ if not eh_admin and st.session_state.carrinho:
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-# PROCESSA PARAMETROS URL
-query_params = st.query_params
-if "action" in query_params and "id" in query_params:
-    acao = query_params["action"]
-    prod_id = int(query_params["id"])
-    if acao == "editar":
-        st.session_state.produto_editar = prod_id
-        if "produto_deletar" in st.session_state: del st.session_state.produto_deletar
-    elif acao == "deletar":
-        st.session_state.produto_deletar = prod_id
-        if "produto_editar" in st.session_state: del st.session_state.produto_editar
-    st.query_params.clear()
-
 # BUSCA OS PRODUTOS
 lista_produtos = []
 try:
@@ -192,7 +171,7 @@ except Exception:
 if not lista_produtos:
     st.info("📦 Nenhum ativo patrimonial cadastrado no banco SQLite.")
 else:
-    # 🌟 A MÁGICA DO GRID NATIVO: Desenha as colunas em blocos de 4
+    # A MÁGICA DO GRID NATIVO: Desenha as colunas em blocos de 4
     num_colunas = 4
     for i in range(0, len(lista_produtos), num_colunas):
         linha_atual = lista_produtos[i:i+num_colunas]
@@ -203,10 +182,7 @@ else:
                 img_url = produto.get("imagem_url") or "https://ae-pic-a1.aliexpress-media.com/kf/Sec5692edf0554298a37a89db4fa740d4o.jpg_220x220q75.jpg"
                 marca_limpa = produto['categoria'].split('|')[0].strip() if '|' in produto['categoria'] else produto['categoria']
                 
-                botoes_card = ""
-                if eh_admin:
-                    botoes_card = f'<div class="card-actions-row"><a href="?action=editar&id={produto["id"]}" target="_self" class="btn-card-action btn-edit">✏️ Editar</a><a href="?action=deletar&id={produto["id"]}" target="_self" class="btn-card-action btn-delete">🗑️ Apagar</a></div>'
-                
+                # Monta apenas a casca visual do Card Premium
                 html_bruto = f"""
                 <div class="tech-card">
                     <div>
@@ -221,16 +197,28 @@ else:
                             <div class="prod-price-tag">R$ {produto['preco']:.2f}</div>
                             <div class="prod-stock-tag">x{produto['quantidade']}</div>
                         </div>
-                        {botoes_card}
                     </div>
                 </div>
                 """
                 
-                # 💉 VACINA ANTI-MARKDOWN: Arranca todas as quebras de linha e recuos
+                # Injeta o HTML estilizável limpo
                 html_blindado = html_bruto.replace("\n", "").replace("    ", "")
                 st.markdown(html_blindado, unsafe_allow_html=True)
                 
-                if not eh_admin:
+                # AÇÕES CONTROLADAS NATIVAS (Previnem o recarregamento fantasma)
+                if eh_admin:
+                    c_edit, c_del = st.columns(2)
+                    with c_edit:
+                        if st.button("✏️ Editar", key=f"edit_prod_{produto['id']}", use_container_width=True):
+                            st.session_state.produto_editar = produto['id']
+                            if "produto_deletar" in st.session_state: del st.session_state.produto_deletar
+                            st.rerun()
+                    with c_del:
+                        if st.button("🗑️ Apagar", key=f"del_prod_{produto['id']}", use_container_width=True):
+                            st.session_state.produto_deletar = produto['id']
+                            if "produto_editar" in st.session_state: del st.session_state.produto_editar
+                            st.rerun()
+                else:
                     if st.button("🛍️ Adicionar ao Pedido", key=f"add_cart_{produto['id']}", use_container_width=True):
                         p_nome = produto['nome']
                         if p_nome in st.session_state.carrinho:
@@ -240,16 +228,14 @@ else:
                         st.toast(f"🛒 {p_nome} inserido na sacola!")
                         st.rerun()
 
-    # --- PROCESSAMENTO DOS FORMULÁRIOS INFERIORES ---
-    for produto in lista_produtos:
-        if "produto_deletar" in st.session_state and st.session_state.produto_deletar == produto['id']:
-            st.markdown('<div class="form-overlay-box" style="border-color:#ff3b3b;">', unsafe_allow_html=True)
-            st.markdown(f"#### ⚠️ Confirmar exclusão do patrimônio?")
-            st.write(f"Ativo selecionado: **{produto['nome']}**")
-            
-            if not eh_admin:
-                st.warning("🔒 Operação bloqueada.")
-            else:
+    # --- PROCESSAMENTO DOS FORMULÁRIOS INFERIORES (EXCLUSIVO ADMIN) ---
+    if eh_admin:
+        for produto in lista_produtos:
+            if "produto_deletar" in st.session_state and st.session_state.produto_deletar == produto['id']:
+                st.markdown('<div class="form-overlay-box" style="border-color:#ff3b3b;">', unsafe_allow_html=True)
+                st.markdown(f"#### ⚠️ Confirmar exclusão do patrimônio?")
+                st.write(f"Ativo selecionado: **{produto['nome']}**")
+                
                 b1, b2 = st.columns(2)
                 with b1:
                     if st.button("Sim, remover", key=f"real_del_{produto['id']}", type="primary", use_container_width=True):
@@ -259,20 +245,17 @@ else:
                                 st.toast("🗑️ Ativo removido!")
                                 del st.session_state.produto_deletar
                                 st.rerun()
-                        except Exception: st.error("Erro.")
+                        except Exception: st.error("Erro ao deletar.")
                 with b2:
                     if st.button("Cancelar", key=f"cancel_del_{produto['id']}", use_container_width=True):
                         del st.session_state.produto_deletar
                         st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
-        if "produto_editar" in st.session_state and st.session_state.produto_editar == produto['id']:
-            st.markdown('<div class="form-overlay-box">', unsafe_allow_html=True)
-            st.markdown(f"#### ⚙️ Modificar Ativo Patrimonial (ID: {produto['id']})")
-            
-            if not eh_admin:
-                st.warning("🔒 Operação bloqueada.")
-            else:
+            if "produto_editar" in st.session_state and st.session_state.produto_editar == produto['id']:
+                st.markdown('<div class="form-overlay-box">', unsafe_allow_html=True)
+                st.markdown(f"#### ⚙️ Modificar Ativo Patrimonial (ID: {produto['id']})")
+                
                 alt_nome = st.text_input("NOME", value=produto['nome'], key=f"form_n_{produto['id']}")
                 alt_cat = st.text_input("CATEGORIA", value=produto['categoria'], key=f"form_c_{produto['id']}")
                 alt_preco = st.number_input("VALOR (R$)", value=float(produto['preco']), key=f"form_p_{produto['id']}")
@@ -289,9 +272,9 @@ else:
                                 st.toast("💾 Alterações salvas!")
                                 del st.session_state.produto_editar
                                 st.rerun()
-                        except Exception: st.error("Erro.")
+                        except Exception: st.error("Erro ao salvar.")
                 with bc:
                     if st.button("Descartar", key=f"form_canc_{produto['id']}", use_container_width=True):
                         del st.session_state.produto_editar
                         st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)

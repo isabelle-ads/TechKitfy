@@ -2,8 +2,6 @@ import streamlit as st
 import requests
 from utils import carregar_design_premium
 
-import streamlit as st
-
 # ==================================================
 # SIDEBAR GLOBAL
 # ==================================================
@@ -231,16 +229,20 @@ else:
             with b_sim:
                 if st.button("Sim, Deletar Conta", type="primary", use_container_width=True):
                     try:
-                        res = requests.delete(f"{API_URL}/{st.session_state.usuario_deletar_id}")
-                        if res.status_code == 200:
+                        target_id = st.session_state.usuario_deletar_id
+                        
+                        # Dispara a requisição DELETE direta para o endpoint correto da sua API
+                        res = requests.delete(f"{API_URL}/{target_id}")
+
+                        if res.status_code in [200, 204]:
                             st.toast("🗑️ Credenciais revogadas com sucesso!")
                             del st.session_state.usuario_deletar_id
                             del st.session_state.usuario_deletar_nome
                             st.rerun()
                         else:
-                            st.error("Erro ao deletar usuário no backend.")
-                    except Exception:
-                        st.error("Erro de comunicação com o servidor.")
+                            st.error(f"Erro ao sincronizar com o banco SQLite. Código retornado: {res.status_code}")
+                    except Exception as e:
+                        st.error(f"Erro de comunicação com a API: {str(e)}")
             with b_nao:
                 if st.button("Cancelar", use_container_width=True):
                     del st.session_state.usuario_deletar_id
